@@ -1,0 +1,14 @@
+tnameserv -ORBInitialPort 2809
+bash /opt/jacorb-3.9/bin/jaco -DORBInitRef.NameService=corbaloc::192.168.0.103:2809/NameService ChannelService.ChannelServer
+bash /opt/jacorb-3.9/bin/jaco -DORBInitRef.NameService=corbaloc::192.168.0.103:2809/NameService PublishSubscribe.PublisherApp node1
+bash /opt/jacorb-3.9/bin/jaco -DORBInitRef.NameService=corbaloc::192.168.0.103:2809/NameService PublishSubscribe.SubscriberApp 0 99 5
+
+
+bash /opt/jacorb-3.9/bin/jaco -DORBInitRef.NameService=corbaloc::10.128.0.2:2809/NameService -Dcustom.props=./orb.properties PublishSubscribe.PublisherApp node1.1
+bash /opt/jacorb-3.9/bin/jaco -DORBInitRef.NameService=corbaloc::10.128.0.2:2809/NameService -Dcustom.props=./orb.properties PublishSubscribe.SubscriberApp 0 99 100
+bash /opt/jacorb-3.9/bin/jaco -DORBInitRef.NameService=corbaloc::10.128.0.2:2809/NameService -Dcustom.props=./orb.properties ChannelService.ChannelServer
+
+
+ bash /opt/jacorb-3.9/bin/jaco -cp "/opt/jacorb-3.9/lib/*:./target/classes" -DORBInitRef.NameService=corbaloc::192.168.0.103:2809/NameService ChannelService.ChannelServer
+ bash /opt/jacorb-3.9/bin/jaco -cp "/opt/jacorb-3.9/lib/*:./target/classes" -DORBInitRef.NameService=corbaloc::192.168.0.103:2809/NameService -Dcustom.props=./config/orb.properties PublishSubscribe.PublisherApp node1.1
+ bash /opt/jacorb-3.9/bin/jaco -cp "/opt/jacorb-3.9/lib/*:./target/classes" -DORBInitRef.NameService=corbaloc::192.168.0.103:2809/NameService -Dcustom.props=./config/orb.properties PublishSubscribe.SubscriberApp 0 99 100

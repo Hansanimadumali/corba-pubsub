@@ -1,0 +1,45 @@
+---
+- hosts: all
+  vars:
+    - userid: deshan
+    - remote_user_home: /home/deshan/
+    - file_name: corba_msc-structure
+    - file_type: zip
+    - local_copy_path: /home/deshan/Downloads/
+
+  tasks:
+    - name: Copying Project
+      become: yes
+      become_user: "{{ userid }}"
+      copy:
+        src: "{{ local_copy_path}}{{ file_name }}.{{file_type}}"
+        dest: "{{ remote_user_home }}"
+        mode: 0655
+
+    - name: Extract the project
+      become: yes
+      become_user: "{{ userid }}"
+      unarchive:
+        src: "{{ remote_user_home }}{{ file_name }}.{{file_type}}"
+        dest: "{{remote_user_home}}"
+        remote_src: True
+
+    - name: Remove the project zip file
+      file:
+        path: "{{ remote_user_home }}{{ file_name }}.{{file_type}}"
+        state: absent
+
+    - name: Rename project directory
+      command: "mv {{remote_user_home}}{{file_name}} corba_project"
+
+    - name: Build the project
+      shell: mvn install
+      args:
+        chdir: "{{ remote_user_home }}corba_project"
+        executable: /bin/bash
+
+
+
+
+
+

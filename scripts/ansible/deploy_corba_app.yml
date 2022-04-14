@@ -1,0 +1,68 @@
+---
+- hosts: root-server
+  vars:
+    - userid: deshan
+    - remote_user_home: /home/deshan/
+    - root_server_ip: 10.128.0.2
+
+  tasks:
+    - name: Deploying Name Service
+      become_user: "{{ userid }}"
+      shell: tnameserv -ORBInitialPort 2809 >/dev/null 2>&1 &
+      async: 10
+      poll: 0
+      args:
+        executable: /bin/bash
+
+
+    - name: Deploying Channel Service
+      become_user: "{{ userid }}"
+      shell: "bash ./scripts/testing/corba/channelserver.sh >/dev/null 2>&1 &"
+      async: 10
+      poll: 0
+      environment:
+        NAME_SERVICE_IP: "{{root_server_ip}}"
+        PROJECT_HOME: "{{remote_user_home}}corba_project"
+      args:
+        executable: /bin/bash
+        chdir: "{{ remote_user_home }}corba_project"
+
+- hosts: publishers
+  vars:
+    - userid: deshan
+    - remote_user_home: /home/deshan/
+    - root_server_ip: 10.128.0.2
+    - instances: 1
+
+  tasks:
+    - name: Deploying Publishers
+      become_user: "{{ userid }}"
+      shell: "bash ./scripts/testing/corba/publisher.sh {{ ansible_hostname }} {{ instances }}>/dev/null 2>&1 &"
+      async: 10
+      poll: 0
+      environment:
+        NAME_SERVICE_IP: "{{root_server_ip}}"
+        PROJECT_HOME: "{{remote_user_home}}corba_project"
+      args:
+        executable: /bin/bash
+        chdir: "{{ remote_user_home }}corba_project"
+
+- hosts: subscribers
+  vars:
+    - userid: deshan
+    - remote_user_home: /home/deshan/
+    - root_server_ip: 10.128.0.2
+    - instances: 1
+
+  tasks:
+    - name: Deploying Subscribers
+      become_user: "{{ userid }}"
+      shell: "bash ./scripts/testing/corba/subscriber.sh {{ instances }}>/dev/null 2>&1 &"
+      async: 10
+      poll: 0
+      environment:
+        NAME_SERVICE_IP: "{{root_server_ip}}"
+        PROJECT_HOME: "{{remote_user_home}}corba_project"
+      args:
+        executable: /bin/bash
+        chdir: "{{ remote_user_home }}corba_project"

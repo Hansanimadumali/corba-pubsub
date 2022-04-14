@@ -1,0 +1,14 @@
+---
+- hosts: all
+  vars:
+    - userid: deshan
+
+  tasks:
+    - name: Stoping CORBA Services
+      become: yes
+      become_user: "{{ userid }}"
+      shell: "for pid in $(ps -ef | awk '/python3/ {print $2}'); do kill -9 $pid; done"
+      async: 10
+      poll: 0
+      args:
+        executable: /bin/bash

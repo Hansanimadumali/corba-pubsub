@@ -1,0 +1,16 @@
+#include "CosEventComm.idl"
+module PublishSubscribe{
+    interface Publisher : CosEventComm::PushSupplier{};
+
+    interface Subscriber : CosEventComm::PushConsumer
+    {
+        readonly attribute long min;
+        readonly attribute long max;
+    };
+
+    struct Message {
+        unsigned long number;
+        string server;
+        string timestamp;
+    };
+};

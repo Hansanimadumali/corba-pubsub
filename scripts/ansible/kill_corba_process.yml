@@ -1,0 +1,29 @@
+---
+- hosts: all
+  vars:
+    - userid: deshan
+
+  tasks:
+    - name: Stoping CORBA Services
+      become: yes
+      become_user: "{{ userid }}"
+      shell: "for pid in $(ps -ef | awk '/jaco/ {print $2}'); do kill -9 $pid; done"
+      async: 10
+      poll: 0
+      args:
+        executable: /bin/bash
+
+- hosts: root-server
+  vars:
+    - userid: deshan
+
+  tasks:
+    - name: Stoping Name Service
+      become: yes
+      become_user: "{{ userid }}"
+      shell: "for pid in $(ps -ef | awk '/tname/ {print $2}'); do kill -9 $pid; done"
+      async: 10
+      poll: 0
+      args:
+        executable: /bin/bash
+
